@@ -1,44 +1,137 @@
 "use client";
 
 import Link from "next/link";
-
+import { motion } from "framer-motion";
 
 
 export default function Home(){
 
 
+const features=[
+
+{
+icon:"🤖",
+title:"AI Recommendation",
+text:"Personalized food suggestions based on customer orders and preferences."
+},
+
+{
+icon:"📈",
+title:"Sales Prediction",
+text:"Predict future revenue trends and understand restaurant performance."
+},
+
+{
+icon:"📦",
+title:"Smart Inventory",
+text:"AI detects low stock ingredients and predicts future demand."
+},
+
+{
+icon:"👨‍🍳",
+title:"Smart Kitchen",
+text:"AI helps chefs prioritize orders and reduce preparation time."
+},
+
+{
+icon:"📊",
+title:"Business Intelligence",
+text:"Track restaurant growth using real-time analytics."
+},
+
+{
+icon:"💬",
+title:"AI Assistant",
+text:"Ask SmartServe AI about menu, sales and inventory."
+}
+
+];
+
+
+
+const stats=[
+
+{
+number:"500+",
+label:"Orders Managed",
+color:"text-blue-400"
+},
+
+{
+number:"AI",
+label:"Demand Prediction",
+color:"text-green-400"
+},
+
+{
+number:"24/7",
+label:"Smart Monitoring",
+color:"text-yellow-400"
+},
+
+{
+number:"100%",
+label:"Data Driven",
+color:"text-purple-400"
+}
+
+];
+
+
+
+
+
 return(
 
-
-<main className="
+<main
+className="
 min-h-screen
 bg-gray-950
 text-white
-">
+overflow-hidden
+"
+>
 
 
+{/* HERO */}
 
-
-
-{/* HERO SECTION */}
-
-
-<section className="
+<section
+className="
 pt-32
 px-8
-pb-20
+pb-24
 text-center
-">
+"
+>
 
 
-<div className="
+<motion.div
+
+initial={{
+opacity:0,
+y:40
+}}
+
+animate={{
+opacity:1,
+y:0
+}}
+
+transition={{
+duration:0.8
+}}
+
+className="
 max-w-5xl
 mx-auto
-">
+"
+
+>
 
 
 
-<div className="
+<div
+className="
 inline-block
 bg-blue-500/20
 border
@@ -47,7 +140,8 @@ rounded-full
 px-5
 py-2
 mb-8
-">
+"
+>
 
 🤖 AI Powered Restaurant Intelligence
 
@@ -57,22 +151,24 @@ mb-8
 
 
 
-<h1 className="
+<h1
+className="
 text-5xl
 md:text-7xl
 font-extrabold
 leading-tight
-">
-
+"
+>
 
 SmartServe AI
 
 <br/>
 
-
-<span className="
+<span
+className="
 text-blue-500
-">
+"
+>
 
 The Future of Smart Restaurants
 
@@ -85,19 +181,19 @@ The Future of Smart Restaurants
 
 
 
-<p className="
+<p
+className="
 mt-8
 text-xl
 text-gray-300
 max-w-3xl
 mx-auto
-">
+"
+>
 
-
-An intelligent restaurant management platform that uses
-AI recommendations, demand forecasting, sales prediction
-and smart inventory optimization.
-
+An intelligent restaurant management platform powered by AI
+recommendations, demand forecasting, sales prediction and
+smart inventory optimization.
 
 </p>
 
@@ -105,17 +201,15 @@ and smart inventory optimization.
 
 
 
-
-
-
-
-<div className="
+<div
+className="
 flex
 justify-center
 gap-5
 mt-10
 flex-wrap
-">
+"
+>
 
 
 <Link
@@ -125,6 +219,8 @@ href="/menu"
 className="
 bg-blue-600
 hover:bg-blue-700
+hover:scale-105
+transition
 px-8
 py-4
 rounded-xl
@@ -142,8 +238,6 @@ text-lg
 
 
 
-
-
 <Link
 
 href="/admin/login"
@@ -152,6 +246,8 @@ className="
 border
 border-gray-600
 hover:bg-gray-800
+hover:scale-105
+transition
 px-8
 py-4
 rounded-xl
@@ -166,13 +262,10 @@ text-lg
 </Link>
 
 
-
 </div>
 
 
-
-
-</div>
+</motion.div>
 
 
 </section>
@@ -188,163 +281,97 @@ text-lg
 {/* STATS */}
 
 
-<section className="
+<section
+className="
 px-8
 pb-20
-">
+"
+>
 
 
-<div className="
+<div
+className="
 max-w-6xl
 mx-auto
 grid
 grid-cols-1
 md:grid-cols-4
 gap-6
-">
+"
+>
 
 
+{
+
+stats.map((stat,index)=>(
 
 
+<motion.div
 
-<div className="
+key={index}
+
+initial={{
+opacity:0,
+y:50
+}}
+
+whileInView={{
+opacity:1,
+y:0
+}}
+
+transition={{
+duration:0.5,
+delay:index*0.1
+}}
+
+whileHover={{
+scale:1.05
+}}
+
+className="
 bg-gray-900
 rounded-2xl
 p-8
 text-center
 border
 border-gray-800
-">
+"
 
-<h2 className="
+>
+
+
+<h2
+className={`
 text-4xl
 font-bold
-text-blue-400
-">
+${stat.color}
+`}
+>
 
-500+
+{stat.number}
 
 </h2>
 
 
-<p className="text-gray-400 mt-2">
+<p
+className="
+text-gray-400
+mt-2
+"
+>
 
-Orders Managed
-
-</p>
-
-
-</div>
-
-
-
-
-
-
-
-
-<div className="
-bg-gray-900
-rounded-2xl
-p-8
-text-center
-border
-border-gray-800
-">
-
-<h2 className="
-text-4xl
-font-bold
-text-green-400
-">
-
-AI
-
-</h2>
-
-
-<p className="text-gray-400 mt-2">
-
-Demand Prediction
+{stat.label}
 
 </p>
 
 
-</div>
+</motion.div>
 
 
+))
 
-
-
-
-
-
-<div className="
-bg-gray-900
-rounded-2xl
-p-8
-text-center
-border
-border-gray-800
-">
-
-<h2 className="
-text-4xl
-font-bold
-text-yellow-400
-">
-
-24/7
-
-</h2>
-
-
-<p className="text-gray-400 mt-2">
-
-Smart Monitoring
-
-</p>
-
-
-</div>
-
-
-
-
-
-
-
-<div className="
-bg-gray-900
-rounded-2xl
-p-8
-text-center
-border
-border-gray-800
-">
-
-<h2 className="
-text-4xl
-font-bold
-text-purple-400
-">
-
-100%
-
-</h2>
-
-
-<p className="text-gray-400 mt-2">
-
-Data Driven
-
-</p>
-
-
-</div>
-
-
-
+}
 
 
 </div>
@@ -363,18 +390,22 @@ Data Driven
 {/* FEATURES */}
 
 
-<section className="
+<section
+className="
 px-8
-pb-20
-">
+pb-24
+"
+>
 
 
-<h2 className="
+<h2
+className="
 text-4xl
 font-bold
 text-center
 mb-12
-">
+"
+>
 
 Powerful AI Features 🚀
 
@@ -384,19 +415,46 @@ Powerful AI Features 🚀
 
 
 
-<div className="
+<div
+className="
 max-w-6xl
 mx-auto
 grid
 md:grid-cols-3
 gap-8
-">
+"
+>
 
 
+{
+
+features.map((feature,index)=>(
 
 
+<motion.div
 
-<div className="
+key={index}
+
+initial={{
+opacity:0,
+y:50
+}}
+
+whileInView={{
+opacity:1,
+y:0
+}}
+
+transition={{
+duration:0.5,
+delay:index*0.1
+}}
+
+whileHover={{
+y:-10
+}}
+
+className="
 bg-gray-900
 p-8
 rounded-2xl
@@ -404,118 +462,55 @@ border
 border-gray-800
 hover:border-blue-500
 transition
-">
+"
+
+>
 
 
-<h3 className="
-text-2xl
-font-bold
-">
+<div
+className="
+text-5xl
+"
+>
 
-🤖 AI Recommendation
-
-</h3>
-
-
-<p className="
-text-gray-400
-mt-4
-">
-
-Personalized food suggestions based on customer
-orders and preferences.
-
-</p>
-
+{feature.icon}
 
 </div>
 
 
 
-
-
-
-
-
-<div className="
-bg-gray-900
-p-8
-rounded-2xl
-border
-border-gray-800
-hover:border-green-500
-transition
-">
-
-
-<h3 className="
+<h3
+className="
 text-2xl
 font-bold
-">
+mt-5
+"
+>
 
-📈 Sales Prediction
+{feature.title}
 
 </h3>
 
 
-<p className="
+
+<p
+className="
 text-gray-400
 mt-4
-">
+"
+>
 
-Predict future revenue trends and understand
-restaurant performance.
-
+{feature.text}
 
 </p>
 
 
-</div>
+</motion.div>
 
 
+))
 
-
-
-
-
-
-<div className="
-bg-gray-900
-p-8
-rounded-2xl
-border
-border-gray-800
-hover:border-yellow-500
-transition
-">
-
-
-<h3 className="
-text-2xl
-font-bold
-">
-
-📦 Smart Inventory
-
-</h3>
-
-
-<p className="
-text-gray-400
-mt-4
-">
-
-AI detects low stock ingredients and predicts
-future demand.
-
-
-</p>
-
-
-</div>
-
-
-
+}
 
 
 </div>
@@ -531,17 +526,28 @@ future demand.
 
 
 
-{/* AI WORKFLOW */}
+{/* WORKFLOW */}
 
 
-
-<section className="
+<section
+className="
 px-8
-pb-20
-">
+pb-24
+"
+>
 
 
-<div className="
+<motion.div
+
+initial={{
+opacity:0
+}}
+
+whileInView={{
+opacity:1
+}}
+
+className="
 max-w-5xl
 mx-auto
 bg-gradient-to-r
@@ -549,15 +555,19 @@ from-blue-900
 to-purple-900
 rounded-3xl
 p-10
-">
+"
+
+>
 
 
-<h2 className="
+<h2
+className="
 text-3xl
 font-bold
-mb-8
 text-center
-">
+mb-8
+"
+>
 
 How SmartServe AI Works ⚡
 
@@ -565,108 +575,63 @@ How SmartServe AI Works ⚡
 
 
 
-
-
-<div className="
+<div
+className="
 grid
 md:grid-cols-4
 gap-6
 text-center
-">
+"
+>
 
 
+{
 
-<div>
+[
+["🛒","Customer Orders"],
+["🧠","AI Analysis"],
+["📊","Prediction"],
+["🚀","Better Decisions"]
+].map((item,index)=>(
 
-<div className="
-text-4xl
-">
 
-🛒
+<div key={index}>
+
+
+<div
+className="
+text-5xl
+"
+>
+
+{item[0]}
 
 </div>
 
-<p className="mt-3">
 
-Customer Orders
+<p
+className="
+mt-3
+"
+>
+
+{item[1]}
 
 </p>
 
-</div>
-
-
-
-
-
-<div>
-
-<div className="
-text-4xl
-">
-
-🧠
-
-</div>
-
-<p className="mt-3">
-
-AI Analysis
-
-</p>
 
 </div>
 
 
+))
 
-
-
-<div>
-
-<div className="
-text-4xl
-">
-
-📊
-
-</div>
-
-<p className="mt-3">
-
-Prediction
-
-</p>
-
-</div>
-
-
-
-
-
-<div>
-
-<div className="
-text-4xl
-">
-
-🚀
-
-</div>
-
-<p className="mt-3">
-
-Better Decisions
-
-</p>
-
-</div>
-
-
+}
 
 
 </div>
 
 
-</div>
+</motion.div>
 
 
 </section>
@@ -679,37 +644,41 @@ Better Decisions
 
 
 
-{/* FINAL CTA */}
+{/* CTA */}
 
 
-<section className="
+<section
+className="
 px-8
 pb-20
 text-center
-">
+"
+>
 
 
-<h2 className="
+<h2
+className="
 text-4xl
 font-bold
-">
+"
+>
 
 Ready to Build the Restaurant of Tomorrow?
 
 </h2>
 
 
-
-<p className="
+<p
+className="
 text-gray-400
 mt-5
 text-lg
-">
+"
+>
 
 Experience AI powered restaurant management with SmartServe AI.
 
 </p>
-
 
 
 
@@ -722,6 +691,9 @@ className="
 inline-block
 mt-8
 bg-blue-600
+hover:bg-blue-700
+hover:scale-105
+transition
 px-10
 py-4
 rounded-xl
@@ -736,12 +708,7 @@ Start Ordering 🚀
 
 
 
-
 </section>
-
-
-
-
 
 
 
@@ -749,6 +716,5 @@ Start Ordering 🚀
 
 
 );
-
 
 }
