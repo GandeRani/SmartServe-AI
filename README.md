@@ -1,6 +1,9 @@
 # 🍽️ SmartServe AI 🤖
 
 # AI-Powered Restaurant Intelligence Platform
+## 🌐 Live Demo
+
+https://smartserve-ai-app.vercel.app/
 
 SmartServe AI is a next-generation **AI-powered restaurant management platform** that combines artificial intelligence, automation, analytics, and modern full-stack technologies to transform traditional restaurant operations.
 
