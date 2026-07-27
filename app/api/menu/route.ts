@@ -3,6 +3,8 @@ import prisma from "@/app/lib/prisma";
 
 export async function GET() {
   try {
+    console.log("Starting menu fetch...");
+
     const menuItems = await prisma.menuItem.findMany({
       where: {
         available: true,
@@ -21,20 +23,27 @@ export async function GET() {
       },
     });
 
+    console.log("Menu fetched:", menuItems.length);
+
     return NextResponse.json(
-      menuItems,
+      {
+        success: true,
+        data: menuItems,
+      },
       {
         status: 200,
       }
     );
 
   } catch (error: any) {
-    console.error("Menu API Error:", error);
+
+    console.error("MENU ERROR:", error);
 
     return NextResponse.json(
       {
-        error: "Failed to fetch menu",
-        message: error.message,
+        success: false,
+        error: error.message,
+        type: error.name,
       },
       {
         status: 500,
