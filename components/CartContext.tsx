@@ -4,28 +4,54 @@ import {
   createContext,
   useContext,
   useEffect,
-  useState
+  useState,
+  ReactNode
 } from "react";
 
 
-const CartContext = createContext<any>(null);
+type CartItem = {
+
+  name: string;
+
+  price: string;
+
+  image: string;
+
+};
+
+
+
+type CartContextType = {
+
+  cart: CartItem[];
+
+  addToCart: (item: CartItem) => void;
+
+  removeFromCart: (index:number) => void;
+
+  clearCart: () => void;
+
+};
+
+
+
+const CartContext = createContext<CartContextType | null>(null);
+
 
 
 
 export function CartProvider({
   children
-}: {
-  children: React.ReactNode;
+}:{
+  children: ReactNode
 }) {
 
 
-  const [cart,setCart] = useState<any[]>([]);
-
-  const [orders,setOrders] = useState<any[]>([]);
+  const [cart,setCart] = useState<CartItem[]>([]);
 
 
 
-  // Load cart
+  // Load cart from browser storage
   useEffect(()=>{
 
     const savedCart =
@@ -44,10 +70,9 @@ export function CartProvider({
 
 
 
-
-  // Save cart
-
+  // Save cart whenever cart changes
   useEffect(()=>{
+
 
     localStorage.setItem(
       "smartserve-cart",
@@ -61,150 +86,80 @@ export function CartProvider({
 
 
 
+  // Add item
 
-  // Load orders
-
-  useEffect(()=>{
-
-    const savedOrders =
-      localStorage.getItem("smartserve-orders");
+  function addToCart(item:CartItem){
 
 
-    if(savedOrders){
+    setCart((previousCart)=>{
 
-      setOrders(
-        JSON.parse(savedOrders)
+
+      const updatedCart = [
+        ...previousCart,
+        item
+      ];
+
+
+      return updatedCart;
+
+
+    });
+
+
+  }
+
+
+
+
+
+  // Remove item
+
+  function removeFromCart(index:number){
+
+
+    setCart((previousCart)=>{
+
+
+      const updatedCart =
+        previousCart.filter(
+          (_,i)=> i !== index
+        );
+
+
+
+      localStorage.setItem(
+        "smartserve-cart",
+        JSON.stringify(updatedCart)
       );
 
-    }
 
 
-  },[]);
+      return updatedCart;
 
 
+    });
 
 
-
-
-
-
-  const addToCart = (item:any)=>{
-
-
-    setCart((old)=>[
-
-      ...old,
-      item
-
-    ]);
-
-
-  };
+  }
 
 
 
 
 
+  // Empty complete cart
 
+  function clearCart(){
 
-  const removeFromCart = (index:number)=>{
-
-
-    setCart((old)=>
-
-      old.filter(
-        (_,i)=>i!==index
-      )
-
-    );
-
-
-  };
-
-
-
-
-
-
-
-  const clearCart = ()=>{
 
     setCart([]);
 
-  };
 
-
-
-
-
-
-
-
-  const placeOrder = (orderData:any)=>{
-
-
-    const newOrder = {
-
-      orderId:
-      "SS" +
-      Math.floor(
-        10000 +
-        Math.random()*90000
-      ),
-
-
-      ...orderData,
-
-
-      status:"New",
-
-
-      priority:"HIGH",
-
-
-      createdAt:
-      new Date().toISOString()
-
-    };
-
-
-
-
-
-    const updatedOrders=[
-
-      ...orders,
-
-      newOrder
-
-    ];
-
-
-
-
-    setOrders(updatedOrders);
-
-
-
-    localStorage.setItem(
-
-      "smartserve-orders",
-
-      JSON.stringify(updatedOrders)
-
+    localStorage.removeItem(
+      "smartserve-cart"
     );
 
 
-
-
-    return newOrder;
-
-
-  };
-
-
-
-
+  }
 
 
 
@@ -218,15 +173,11 @@ export function CartProvider({
 
         cart,
 
-        orders,
-
         addToCart,
 
         removeFromCart,
 
-        clearCart,
-
-        placeOrder
+        clearCart
 
       }}
 
@@ -235,6 +186,7 @@ export function CartProvider({
       {children}
 
     </CartContext.Provider>
+
 
   );
 
@@ -255,11 +207,14 @@ export function useCart(){
 
   if(!context){
 
+
     throw new Error(
       "useCart must be used inside CartProvider"
     );
 
+
   }
+
 
 
   return context;

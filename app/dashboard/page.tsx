@@ -1,77 +1,367 @@
-export default function DashboardPage() {
+"use client";
+
+import { useEffect, useState } from "react";
 
 
-  const stats = [
-    {
-      title: "Total Orders",
-      value: "128",
-      icon: "🍽️"
-    },
-    {
-      title: "Average Waiting Time",
-      value: "12 min",
-      icon: "⏱️"
-    },
-    {
-      title: "Inventory Alerts",
-      value: "5",
-      icon: "📦"
-    },
-    {
-      title: "Today's Revenue",
-      value: "₹24,500",
-      icon: "💰"
+export default function DashboardPage(){
+
+
+  const [stats,setStats] = useState({
+
+    totalOrders:0,
+
+    revenue:0,
+
+    preparing:0,
+
+    delivered:0
+
+  });
+
+
+  const [loading,setLoading] = useState(true);
+
+
+
+
+
+  async function loadDashboard(){
+
+
+    try{
+
+
+      const response = await fetch(
+        "/api/orders",
+        {
+          cache:"no-store"
+        }
+      );
+
+
+      const orders = await response.json();
+
+
+
+
+      const totalOrders = orders.length;
+
+
+
+      const revenue = orders.reduce(
+
+        (sum:any,order:any)=>
+
+          sum + order.total,
+
+        0
+
+      );
+
+
+
+      const preparing = orders.filter(
+
+        (order:any)=>
+
+          order.status==="PREPARING"
+
+      ).length;
+
+
+
+
+      const delivered = orders.filter(
+
+        (order:any)=>
+
+          order.status==="DELIVERED"
+
+      ).length;
+
+
+
+
+      setStats({
+
+        totalOrders,
+
+        revenue,
+
+        preparing,
+
+        delivered
+
+      });
+
+
+
     }
+
+
+    catch(error){
+
+
+      console.log(
+        "Dashboard error:",
+        error
+      );
+
+
+    }
+
+
+    finally{
+
+
+      setLoading(false);
+
+
+    }
+
+
+  }
+
+
+
+
+
+
+
+
+  useEffect(()=>{
+
+
+    loadDashboard();
+
+
+  },[]);
+
+
+
+
+
+
+
+
+  if(loading){
+
+
+    return (
+
+      <main className="min-h-screen flex items-center justify-center">
+
+        <h1 className="text-2xl font-bold">
+
+          Loading Dashboard...
+
+        </h1>
+
+      </main>
+
+    );
+
+
+  }
+
+
+
+
+
+
+
+
+  const cards=[
+
+
+    {
+
+      title:"Total Orders",
+
+      value:stats.totalOrders,
+
+      icon:"🍽️"
+
+    },
+
+
+    {
+
+      title:"Revenue",
+
+      value:`₹${stats.revenue}`,
+
+      icon:"💰"
+
+    },
+
+
+    {
+
+      title:"Preparing Orders",
+
+      value:stats.preparing,
+
+      icon:"👨‍🍳"
+
+    },
+
+
+    {
+
+      title:"Delivered Orders",
+
+      value:stats.delivered,
+
+      icon:"✅"
+
+    }
+
+
   ];
 
 
 
-  return (
-
-    <main className="min-h-screen p-10">
 
 
-      <h1 className="text-4xl font-bold">
+
+
+
+
+  return(
+
+
+    <main className="
+
+    min-h-screen
+
+    bg-gray-100
+
+    dark:bg-gray-950
+
+    pt-24
+
+    px-10
+
+    pb-10
+
+    ">
+
+
+      <h1 className="
+
+      text-5xl
+
+      font-bold
+
+      dark:text-white
+
+      ">
+
         Restaurant Dashboard 📊
+
       </h1>
 
 
-      <p className="mt-3">
-        AI-powered insights for restaurant operations.
+
+
+      <p className="mt-4 text-gray-600 dark:text-gray-300">
+
+        AI-powered restaurant insights
+
       </p>
 
 
 
-      <div className="grid md:grid-cols-4 gap-6 mt-10">
 
 
-        {
-          stats.map((stat,index)=>(
-
-            <div
-              key={index}
-              className="card rounded-xl shadow p-6"
-            >
-
-              <div className="text-4xl">
-                {stat.icon}
-              </div>
 
 
-              <h2 className="mt-4 font-semibold">
-                {stat.title}
-              </h2>
+      <div className="
+
+      grid
+
+      md:grid-cols-4
+
+      gap-6
+
+      mt-10
+
+      ">
 
 
-              <p className="text-3xl font-bold mt-2">
-                {stat.value}
-              </p>
+      {
 
+        cards.map((card)=>(
+
+
+          <div
+
+          key={card.title}
+
+          className="
+
+          bg-white
+
+          dark:bg-gray-900
+
+          rounded-2xl
+
+          shadow-lg
+
+          p-6
+
+          ">
+
+
+            <div className="text-4xl">
+
+              {card.icon}
 
             </div>
 
-          ))
-        }
+
+
+            <h2 className="
+
+            mt-4
+
+            font-bold
+
+            dark:text-white
+
+            ">
+
+              {card.title}
+
+            </h2>
+
+
+
+            <p className="
+
+            text-3xl
+
+            font-bold
+
+            mt-3
+
+            text-blue-600
+
+            ">
+
+              {card.value}
+
+            </p>
+
+
+
+          </div>
+
+
+        ))
+
+      }
 
 
       </div>
@@ -79,27 +369,75 @@ export default function DashboardPage() {
 
 
 
-      <div className="grid md:grid-cols-2 gap-6 mt-10">
 
 
-        <div className="card rounded-xl shadow p-6">
 
-          <h2 className="text-2xl font-bold">
+
+      <div className="
+
+      grid
+
+      md:grid-cols-2
+
+      gap-6
+
+      mt-10
+
+      ">
+
+
+
+        <div className="
+
+        bg-white
+
+        dark:bg-gray-900
+
+        rounded-2xl
+
+        shadow-lg
+
+        p-8
+
+        ">
+
+
+          <h2 className="
+
+          text-2xl
+
+          font-bold
+
+          dark:text-white
+
+          ">
+
             AI Insights 🤖
+
           </h2>
 
 
+
           <p className="mt-4">
-            🔥 Peak customer hours: 12 PM - 2 PM
+
+            🔥 Monitor peak order hours
+
           </p>
 
-          <p>
-            📈 Increase pizza preparation capacity
-          </p>
 
           <p>
-            ⚠️ Chicken inventory may run low today
+
+            📈 Increase popular food preparation
+
           </p>
+
+
+          <p>
+
+            ⚠️ Track inventory automatically
+
+          </p>
+
 
 
         </div>
@@ -107,34 +445,79 @@ export default function DashboardPage() {
 
 
 
-        <div className="card rounded-xl shadow p-6">
 
-          <h2 className="text-2xl font-bold">
-            Order Status
+
+
+        <div className="
+
+        bg-white
+
+        dark:bg-gray-900
+
+        rounded-2xl
+
+        shadow-lg
+
+        p-8
+
+        ">
+
+
+
+          <h2 className="
+
+          text-2xl
+
+          font-bold
+
+          dark:text-white
+
+          ">
+
+            Live Order Summary 🚚
+
           </h2>
 
 
+
           <p className="mt-4">
-            🟢 Completed Orders: 86
+
+            👨‍🍳 Preparing: {stats.preparing}
+
           </p>
 
-          <p>
-            🟡 Preparing Orders: 24
-          </p>
+
 
           <p>
-            🔴 Delayed Orders: 18
+
+            ✅ Delivered: {stats.delivered}
+
           </p>
+
+
+
+          <p>
+
+            📦 Total: {stats.totalOrders}
+
+          </p>
+
 
 
         </div>
+
 
 
       </div>
+
+
+
 
 
     </main>
 
+
   );
+
 
 }

@@ -3,282 +3,259 @@
 import { useEffect, useState } from "react";
 
 
-export default function KitchenPage() {
+type Order = {
 
+id:number;
 
-  const [orders,setOrders] = useState<any[]>([]);
+total:number;
 
+status:string;
 
+createdAt:string;
 
-  useEffect(()=>{
+items:{
+id:number;
+quantity:number;
+menu:{
+name:string;
+};
+}[];
 
-    const savedOrders =
-      localStorage.getItem("smartserve-orders");
+};
 
 
-    if(savedOrders){
 
-      const data = JSON.parse(savedOrders);
+export default function KitchenPage(){
 
 
-      const updatedOrders = data.map((order:any)=>({
+const [orders,setOrders] = useState<Order[]>([]);
 
-        ...order,
+const [loading,setLoading] = useState(true);
 
-        priority:
-          order.waiting > 10
-          ? "HIGH 🔴"
-          :
-          order.waiting >= 5
-          ? "MEDIUM 🟡"
-          :
-          "LOW 🟢"
 
 
-      }));
 
 
-      setOrders(updatedOrders);
 
-    }
 
+async function loadOrders(){
 
-  },[]);
 
+try{
 
 
+const res = await fetch(
 
+"/api/kitchen",
 
-  const updateStatus = (
-    index:number,
-    status:string
-  )=>{
+{
 
+cache:"no-store"
 
-    const updated = [...orders];
+}
 
+);
 
-    updated[index].status = status;
 
 
-    setOrders(updated);
+const data = await res.json();
 
 
+setOrders(data);
 
-    localStorage.setItem(
-      "smartserve-orders",
-      JSON.stringify(updated)
-    );
 
 
-  };
+}
 
+catch(error){
 
 
+console.log(
+"Kitchen loading error",
+error
+);
 
 
+}
 
-  return (
+finally{
 
-    <main
-      className="
-      min-h-screen
-      bg-gray-100
-      dark:bg-gray-950
-      p-10
-      "
-    >
 
+setLoading(false);
 
-      <h1
-        className="
-        text-4xl
-        font-bold
-        text-gray-900
-        dark:text-white
-        "
-      >
 
-        Smart Kitchen Dashboard 👨‍🍳
+}
 
-      </h1>
 
 
+}
 
 
-      <p className="
-      mt-3
-      text-gray-600
-      dark:text-gray-300
-      ">
 
-        AI-powered order prioritization and kitchen management
 
-      </p>
 
 
 
+useEffect(()=>{
 
 
+loadOrders();
 
-      {
-        orders.length === 0 ? (
 
-          <p className="mt-10 text-xl">
 
-            No orders available 🍽️
+const interval = setInterval(()=>{
 
-          </p>
 
+loadOrders();
 
-        ) : (
 
+},5000);
 
 
-          <div
-            className="
-            grid
-            md:grid-cols-3
-            gap-8
-            mt-10
-            "
-          >
 
 
+return ()=>clearInterval(interval);
 
-          {
-            orders.map((order,index)=>(
 
 
-              <div
-                key={index}
-                className="
-                bg-white
-                dark:bg-gray-900
-                rounded-2xl
-                shadow-lg
-                p-6
-                "
-              >
+},[]);
 
 
 
-                <h2 className="text-xl font-bold">
 
-                  Order {order.orderId}
 
-                </h2>
 
 
 
 
-                <p className="mt-3">
+async function updateStatus(
 
-                  👤 {order.name}
+id:number,
 
-                </p>
+status:string
 
+){
 
 
+try{
 
-                <p className="mt-3 font-bold">
 
-                  🍽️ Items
+await fetch(
 
-                </p>
+`/api/orders/${id}`,
 
+{
 
+method:"PATCH",
 
-                {
-                  order.items.map(
-                    (item:any,i:number)=>(
+headers:{
 
-                    <p key={i}>
+"Content-Type":"application/json"
 
-                      • {item.name} - {item.price}
+},
 
-                    </p>
+body:JSON.stringify({
 
-                    )
-                  )
-                }
+status
 
+})
 
+}
 
+);
 
-                <p className="mt-3">
 
-                  💰 ₹{order.total}
 
-                </p>
+loadOrders();
 
 
 
+}
 
-                <p className="mt-2">
+catch(error){
 
-                  📍 {order.address}
 
-                </p>
+console.log(
+"Status update error",
+error
+);
 
 
+}
 
 
-                <p className="mt-2">
+}
 
-                  📞 {order.phone}
 
-                </p>
 
 
 
 
 
-                <p className="mt-3">
 
-                  ⏱ Waiting:
+function priority(status:string){
 
-                  <b> {order.waiting || 5} minutes</b>
 
-                </p>
+if(status==="PLACED")
 
+return (
 
+<span className="
+bg-red-500
+px-3
+py-1
+rounded-full
+text-white
+">
 
+HIGH 🔴
 
+</span>
 
+);
 
 
-                <p className="mt-3 font-bold">
 
-                  AI Priority:
+if(status==="PREPARING")
 
-                  <span className="ml-2">
+return (
 
-                    {
-                      order.priority
-                    }
+<span className="
+bg-yellow-500
+px-3
+py-1
+rounded-full
+text-white
+">
 
-                  </span>
+MEDIUM 🟡
 
-                </p>
+</span>
 
+);
 
 
 
+return (
 
+<span className="
+bg-green-600
+px-3
+py-1
+rounded-full
+text-white
+">
 
+LOW 🟢
 
-                <p className="mt-3 font-bold">
+</span>
 
-                  Status:
+);
 
-                  <span className="ml-2 text-blue-600">
 
-                    {order.status || "New"}
 
-                  </span>
+}
 
-                </p>
 
 
 
@@ -286,114 +263,454 @@ export default function KitchenPage() {
 
 
 
-                <div className="
-                flex
-                gap-2
-                mt-6
-                flex-wrap
-                ">
 
+function statusColor(status:string){
 
-                  <button
 
-                    onClick={()=>
-                      updateStatus(
-                        index,
-                        "Preparing 👨‍🍳"
-                      )
-                    }
+if(status==="PLACED")
 
-                    className="
-                    bg-yellow-500
-                    text-white
-                    px-4
-                    py-2
-                    rounded-xl
-                    "
+return "text-red-400";
 
-                  >
 
-                    Accept
+if(status==="PREPARING")
 
-                  </button>
+return "text-yellow-400";
 
 
+if(status==="OUT_FOR_DELIVERY")
 
+return "text-blue-400";
 
 
-                  <button
+return "text-green-400";
 
-                    onClick={()=>
-                      updateStatus(
-                        index,
-                        "Ready 🍱"
-                      )
-                    }
 
-                    className="
-                    bg-green-600
-                    text-white
-                    px-4
-                    py-2
-                    rounded-xl
-                    "
+}
 
-                  >
 
-                    Ready
 
-                  </button>
 
 
 
 
+if(loading){
 
-                  <button
 
-                    onClick={()=>
-                      updateStatus(
-                        index,
-                        "Delivered 🚴"
-                      )
-                    }
+return(
 
-                    className="
-                    bg-blue-600
-                    text-white
-                    px-4
-                    py-2
-                    rounded-xl
-                    "
+<main className="
+min-h-screen
+bg-gray-950
+text-white
+flex
+items-center
+justify-center
+">
 
-                  >
+<h1 className="
+text-2xl
+font-bold
+">
 
-                    Delivered
+Loading Kitchen...
 
-                  </button>
+</h1>
 
+</main>
 
+);
 
-                </div>
 
+}
 
 
-              </div>
 
 
-            ))
-          }
 
 
-          </div>
 
 
-        )
-      }
+return(
 
 
+<main className="
+min-h-screen
+bg-gray-950
+text-white
+pt-24
+px-8
+pb-20
+md:ml-64
+">
 
-    </main>
 
-  );
+
+
+
+
+<h1 className="
+text-4xl
+font-bold
+">
+
+👨‍🍳 Smart Kitchen Dashboard
+
+</h1>
+
+
+
+
+
+
+<p className="
+text-gray-400
+mt-3
+">
+
+AI powered kitchen order management
+
+</p>
+
+
+
+
+
+
+
+
+{
+
+orders.length===0 ?
+
+
+(
+
+<div className="
+mt-10
+bg-gray-900
+p-8
+rounded-xl
+">
+
+No Active Orders 🍽️
+
+</div>
+
+)
+
+
+
+:
+
+
+(
+
+
+<div className="
+grid
+md:grid-cols-3
+gap-6
+mt-10
+">
+
+
+
+
+
+{
+
+orders.map(order=>(
+
+
+
+<div
+
+key={order.id}
+
+className="
+bg-gray-900
+border
+border-gray-800
+rounded-xl
+p-6
+shadow-lg
+"
+
+>
+
+
+
+
+<div className="
+flex
+justify-between
+items-center
+">
+
+
+<h2 className="
+text-2xl
+font-bold
+">
+
+Order #{order.id}
+
+</h2>
+
+
+
+{priority(order.status)}
+
+
+</div>
+
+
+
+
+
+
+
+<h3 className="
+mt-5
+font-bold
+text-lg
+">
+
+🍔 Items
+
+</h3>
+
+
+
+
+
+
+{
+
+order.items.map(item=>(
+
+
+<p
+
+key={item.id}
+
+className="
+text-gray-300
+mt-2
+"
+
+>
+
+{item.menu.name}
+
+×
+
+{item.quantity}
+
+</p>
+
+
+))
+
+}
+
+
+
+
+
+
+
+<p className="
+mt-5
+text-xl
+font-bold
+">
+
+💰 ₹{order.total}
+
+</p>
+
+
+
+
+
+
+
+<p className="
+mt-3
+">
+
+Status:
+
+<span className={`
+ml-2
+font-bold
+${statusColor(order.status)}
+`}>
+
+{order.status}
+
+</span>
+
+</p>
+
+
+
+
+
+
+
+
+<div className="
+mt-6
+flex
+gap-3
+">
+
+
+
+
+{
+
+order.status==="PLACED" &&
+
+<button
+
+onClick={()=>updateStatus(
+
+order.id,
+
+"PREPARING"
+
+)}
+
+className="
+bg-yellow-500
+px-4
+py-2
+rounded-lg
+font-bold
+"
+
+>
+
+👨‍🍳 Start Cooking
+
+</button>
+
+
+}
+
+
+
+
+
+
+
+{
+
+order.status==="PREPARING" &&
+
+<button
+
+onClick={()=>updateStatus(
+
+order.id,
+
+"OUT_FOR_DELIVERY"
+
+)}
+
+className="
+bg-blue-600
+px-4
+py-2
+rounded-lg
+font-bold
+"
+
+>
+
+🚚 Ready
+
+</button>
+
+
+}
+
+
+
+
+
+
+
+{
+
+order.status==="OUT_FOR_DELIVERY" &&
+
+<button
+
+onClick={()=>updateStatus(
+
+order.id,
+
+"DELIVERED"
+
+)}
+
+className="
+bg-green-600
+px-4
+py-2
+rounded-lg
+font-bold
+"
+
+>
+
+✅ Delivered
+
+</button>
+
+
+}
+
+
+
+</div>
+
+
+
+
+
+</div>
+
+
+))
+
+
+}
+
+
+
+</div>
+
+
+)
+
+
+}
+
+
+
+
+
+
+
+</main>
+
+
+);
+
 
 }

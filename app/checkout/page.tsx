@@ -1,101 +1,152 @@
 "use client";
 
 import { useState } from "react";
-import { useCart } from "@/components/CartContext";
 import { useRouter } from "next/navigation";
 
 
 export default function CheckoutPage() {
 
 
-  const {
-    cart,
-    clearCart,
-    placeOrder
-  } = useCart();
-
-
-
   const router = useRouter();
-
 
 
   const [name,setName] = useState("");
   const [phone,setPhone] = useState("");
   const [address,setAddress] = useState("");
 
-
-
-
-
-  const total = cart.reduce(
-    (sum:number,item:any)=>
-      sum + Number(item.price.replace("₹","")),
-    0
-  );
+  const [loading,setLoading] = useState(false);
 
 
 
 
 
-
-
-  const handlePlaceOrder = ()=>{
+  async function handlePlaceOrder(){
 
 
     if(!name || !phone || !address){
 
       alert("Please fill all details");
-
       return;
 
     }
 
 
 
+    try{
 
 
-    const order = placeOrder({
-
-      name,
-
-      phone,
-
-      address,
-
-      total,
-
-      items: cart
-
-    });
+      setLoading(true);
 
 
 
+      const response = await fetch(
+        "/api/orders",
+        {
+
+          method:"POST",
+
+          headers:{
+
+            "Content-Type":"application/json"
+
+          },
 
 
-    // save current order for success page
+          body:JSON.stringify({
 
-    localStorage.setItem(
-      "smartserve-current-order",
-      JSON.stringify(order)
-    );
+            userId:1,
 
+            name:name,
 
+            phone:phone,
 
+            address:address
 
+          })
 
-    clearCart();
-
-
-
-
-
-    router.push("/order-success");
+        }
+      );
 
 
-  };
 
 
+
+      const data = await response.json();
+
+
+
+      console.log(
+        "ORDER RESPONSE:",
+        data
+      );
+
+
+
+
+
+      if(response.ok){
+
+
+        alert(
+          "Order placed successfully 🎉"
+        );
+
+
+        window.dispatchEvent(
+          new Event("cartUpdated")
+        );
+
+
+
+        router.push("/orders");
+
+
+      }
+
+      else{
+
+
+        alert(
+          data.error || "Order failed"
+        );
+
+
+        console.log(
+          "ORDER FAILED:",
+          data
+        );
+
+
+      }
+
+
+
+    }
+    catch(error:any){
+
+
+      console.log(
+        "CHECKOUT ERROR:",
+        error.message
+      );
+
+
+      alert(
+        "Checkout error: " + error.message
+      );
+
+
+    }
+    finally{
+
+
+      setLoading(false);
+
+
+    }
+
+
+  }
 
 
 
@@ -106,6 +157,7 @@ export default function CheckoutPage() {
   return (
 
     <main
+
       className="
       min-h-screen
       bg-gray-100
@@ -114,10 +166,13 @@ export default function CheckoutPage() {
       px-10
       pb-10
       "
+
     >
 
 
+
       <h1
+
         className="
         text-5xl
         font-bold
@@ -125,6 +180,7 @@ export default function CheckoutPage() {
         text-gray-900
         dark:text-white
         "
+
       >
 
         Checkout 💳
@@ -135,7 +191,9 @@ export default function CheckoutPage() {
 
 
 
+
       <div
+
         className="
         max-w-xl
         mx-auto
@@ -146,6 +204,7 @@ export default function CheckoutPage() {
         rounded-2xl
         shadow-lg
         "
+
       >
 
 
@@ -153,9 +212,15 @@ export default function CheckoutPage() {
 
 
         <input
+
           placeholder="Full Name"
+
           value={name}
-          onChange={(e)=>setName(e.target.value)}
+
+          onChange={(e)=>
+            setName(e.target.value)
+          }
+
           className="
           w-full
           p-3
@@ -165,16 +230,24 @@ export default function CheckoutPage() {
           dark:bg-gray-800
           dark:text-white
           "
+
         />
+
 
 
 
 
 
         <input
+
           placeholder="Phone Number"
+
           value={phone}
-          onChange={(e)=>setPhone(e.target.value)}
+
+          onChange={(e)=>
+            setPhone(e.target.value)
+          }
+
           className="
           w-full
           p-3
@@ -184,57 +257,37 @@ export default function CheckoutPage() {
           dark:bg-gray-800
           dark:text-white
           "
+
         />
+
+
 
 
 
 
 
         <textarea
+
           placeholder="Delivery Address"
+
           value={address}
-          onChange={(e)=>setAddress(e.target.value)}
+
+          onChange={(e)=>
+            setAddress(e.target.value)
+          }
+
           className="
           w-full
           p-3
           rounded-xl
           border
-          mb-4
+          mb-6
           dark:bg-gray-800
           dark:text-white
           "
+
         />
 
-
-
-
-
-
-        <div
-          className="
-          flex
-          justify-between
-          text-xl
-          font-bold
-          mb-6
-          text-gray-900
-          dark:text-white
-          "
-        >
-
-          <span>
-            Total
-          </span>
-
-
-          <span className="text-blue-600">
-
-            ₹{total}
-
-          </span>
-
-
-        </div>
 
 
 
@@ -244,12 +297,18 @@ export default function CheckoutPage() {
 
         <button
 
+
           onClick={handlePlaceOrder}
+
+
+          disabled={loading}
+
 
           className="
           w-full
           bg-green-600
           hover:bg-green-700
+          disabled:bg-gray-400
           text-white
           py-4
           rounded-xl
@@ -259,7 +318,20 @@ export default function CheckoutPage() {
 
         >
 
-          Place Order ✅
+
+          {
+            loading
+
+            ?
+
+            "Placing Order..."
+
+            :
+
+            "Place Order ✅"
+
+          }
+
 
         </button>
 
@@ -271,8 +343,9 @@ export default function CheckoutPage() {
 
 
 
-    </main>
 
+
+    </main>
 
   );
 

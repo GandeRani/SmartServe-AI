@@ -3,293 +3,630 @@
 import { useEffect, useState } from "react";
 
 
-export default function OrdersPage() {
+export default function OrdersPage(){
 
 
-  const [orders,setOrders] = useState<any[]>([]);
+const [orders,setOrders] = useState<any[]>([]);
 
+const [loading,setLoading] = useState(true);
 
 
-  useEffect(()=>{
 
 
-    const savedOrders =
-      localStorage.getItem("smartserve-orders");
+async function loadOrders(){
 
 
-    if(savedOrders){
+try{
 
-      setOrders(JSON.parse(savedOrders));
 
-    }
+const res = await fetch(
 
+"/api/orders",
 
-  },[]);
+{
 
+cache:"no-store"
 
+}
 
+);
 
 
-  return (
 
-    <main
-      className="
-      min-h-screen
-      bg-gray-100
-      dark:bg-gray-950
-      pt-24
-      px-10
-      pb-10
-      "
-    >
+const data = await res.json();
 
 
+setOrders(data);
 
-      <h1
-        className="
-        text-5xl
-        font-bold
-        text-center
-        text-gray-900
-        dark:text-white
-        "
-      >
 
-        📦 My Orders
 
-      </h1>
+}
 
+catch(error){
 
 
+console.log(
+"Orders error:",
+error
+);
 
 
-      {
-        orders.length === 0 ? (
+}
 
-          <p
-            className="
-            text-center
-            mt-20
-            text-2xl
-            "
-          >
+finally{
 
-            No orders found 😔
 
-          </p>
+setLoading(false);
 
 
-        ) : (
+}
 
 
-        <div
-          className="
-          max-w-3xl
-          mx-auto
-          mt-12
-          "
-        >
 
+}
 
 
-        {
-          orders.map((order,index)=>(
 
 
-            <div
-              key={index}
-              className="
-              bg-white
-              dark:bg-gray-900
-              rounded-3xl
-              shadow-lg
-              p-8
-              mb-6
-              "
-            >
 
 
+useEffect(()=>{
 
-              <div className="flex justify-between">
 
-                <h2 className="font-bold text-xl">
+loadOrders();
 
-                  Order ID
 
-                </h2>
 
+const interval=setInterval(()=>{
 
-                <span className="text-blue-600 font-bold">
 
-                  {order.orderId}
+loadOrders();
 
-                </span>
 
+},5000);
 
-              </div>
 
 
+return ()=>clearInterval(interval);
 
 
 
+},[]);
 
-              <div className="mt-6">
 
-                <h3 className="font-bold text-lg">
 
-                  Items 🍔
 
-                </h3>
 
 
 
-                {
-                  order.items.map(
-                    (item:any,i:number)=>(
+const statusSteps=[
 
-                    <div
-                      key={i}
-                      className="
-                      flex
-                      justify-between
-                      mt-3
-                      "
-                    >
+{
+name:"PLACED",
+label:"Order Placed 🟡"
+},
 
-                      <span>
+{
+name:"PREPARING",
+label:"Cooking 👨‍🍳"
+},
 
-                        {item.name}
+{
+name:"OUT_FOR_DELIVERY",
+label:"On The Way 🚚"
+},
 
-                      </span>
+{
+name:"DELIVERED",
+label:"Delivered ✅"
+}
 
 
-                      <span className="text-blue-600 font-bold">
+];
 
-                        {item.price}
 
-                      </span>
 
 
-                    </div>
 
-                    )
-                  )
-                }
 
 
-              </div>
 
 
+function statusColor(status:string){
 
 
+if(status==="PLACED")
 
+return "text-yellow-400";
 
 
-              <div className="mt-6 border-t pt-5">
+if(status==="PREPARING")
 
+return "text-blue-400";
 
-                <p>
 
-                  👤 <b>{order.name}</b>
+if(status==="OUT_FOR_DELIVERY")
 
-                </p>
+return "text-purple-400";
 
 
+if(status==="DELIVERED")
 
-                <p className="mt-2">
+return "text-green-400";
 
-                  📍 <b>Address:</b> {order.address}
 
-                </p>
+return "text-white";
 
 
+}
 
-                <p className="mt-2">
 
-                  📞 <b>Phone:</b> {order.phone}
 
-                </p>
 
 
 
 
 
-                <p className="mt-3">
+if(loading){
 
-                  🚴 <b>Status:</b>
 
-                  <span
-                    className="
-                    ml-2
-                    text-green-600
-                    font-bold
-                    "
-                  >
+return(
 
-                    {order.status}
+<main className="
+min-h-screen
+bg-gray-950
+text-white
+flex
+items-center
+justify-center
+">
 
-                  </span>
+<h1 className="text-2xl font-bold">
 
+Loading Orders...
 
-                </p>
+</h1>
 
+</main>
 
+);
 
 
+}
 
 
-                <p className="mt-3">
 
-                  ⏱ Estimated Delivery:
 
-                  <b> 25-30 minutes</b>
 
-                </p>
 
 
 
 
+return(
 
-                <p className="mt-4 text-xl font-bold">
 
-                  Total:
+<main className="
+min-h-screen
+bg-gray-950
+text-white
+pt-24
+px-6
+pb-20
+">
 
-                  <span className="text-blue-600">
 
-                    {" "}₹{order.total}
 
-                  </span>
 
 
-                </p>
 
+<h1 className="
+text-4xl
+md:text-5xl
+font-bold
+text-center
+">
 
+📦 My Orders
 
-              </div>
+</h1>
 
 
 
 
-            </div>
 
 
-          ))
-        }
 
 
+{
 
-        </div>
+orders.length===0 ?
 
 
-        )
-      }
+(
 
+<div className="
+text-center
+mt-20
+text-xl
+text-gray-400
+">
 
+No orders found 😔
 
+</div>
 
+)
 
-    </main>
 
-  );
+
+:
+
+
+(
+
+
+<div className="
+max-w-4xl
+mx-auto
+mt-12
+">
+
+
+{
+
+orders.map(order=>(
+
+
+
+<div
+
+key={order.id}
+
+className="
+bg-gray-900
+border
+border-gray-800
+rounded-2xl
+p-6
+mb-8
+shadow-xl
+"
+
+>
+
+
+
+<div className="
+flex
+justify-between
+items-center
+">
+
+
+<h2 className="
+text-2xl
+font-bold
+">
+
+Order #{order.id}
+
+</h2>
+
+
+
+<span className="
+text-green-400
+text-2xl
+font-bold
+">
+
+₹{order.total}
+
+</span>
+
+
+</div>
+
+
+
+
+
+
+
+
+
+{/* STATUS */}
+
+
+<div className="
+mt-8
+">
+
+
+<h3 className="
+font-bold
+text-xl
+mb-6
+">
+
+🚚 Order Tracking
+
+</h3>
+
+
+
+
+
+<div className="
+grid
+grid-cols-2
+md:grid-cols-4
+gap-5
+">
+
+
+
+{
+
+statusSteps.map((step,index)=>{
+
+
+const currentIndex =
+statusSteps.findIndex(
+
+s=>s.name===order.status
+
+);
+
+
+
+const active =
+index<=currentIndex;
+
+
+
+return(
+
+
+<div
+
+key={step.name}
+
+className="
+text-center
+"
+
+>
+
+
+<div
+
+className={`
+w-12
+h-12
+mx-auto
+rounded-full
+flex
+items-center
+justify-center
+font-bold
+text-white
+
+${
+active
+?
+"bg-green-600"
+:
+"bg-gray-700"
+}
+
+`}
+
+>
+
+
+{index+1}
+
+
+</div>
+
+
+
+
+<p className="
+text-xs
+mt-3
+text-gray-300
+">
+
+{step.label}
+
+</p>
+
+
+
+</div>
+
+
+);
+
+
+})
+
+
+}
+
+
+
+</div>
+
+
+
+</div>
+
+
+
+
+
+
+
+
+
+{/* ITEMS */}
+
+
+
+<div className="
+mt-8
+">
+
+
+<h3 className="
+font-bold
+text-xl
+">
+
+🍔 Items
+
+</h3>
+
+
+
+{
+
+order.items.map((item:any)=>(
+
+
+<div
+
+key={item.id}
+
+className="
+flex
+justify-between
+mt-3
+text-gray-300
+"
+
+>
+
+
+<span>
+
+{item.menu.name}
+
+</span>
+
+
+<span>
+
+Qty: {item.quantity}
+
+</span>
+
+
+</div>
+
+
+))
+
+
+}
+
+
+
+</div>
+
+
+
+
+
+
+
+
+
+<div className="
+mt-8
+border-t
+border-gray-700
+pt-5
+">
+
+
+<p>
+
+<b>Current Status:</b>
+
+
+<span className={`
+
+ml-2
+font-bold
+
+${statusColor(order.status)}
+
+`}>
+
+{order.status.replaceAll("_"," ")}
+
+</span>
+
+
+</p>
+
+
+
+
+<p className="
+mt-3
+text-gray-400
+">
+
+
+📅
+
+{new Date(
+order.createdAt
+).toLocaleDateString()}
+
+
+</p>
+
+
+
+</div>
+
+
+
+
+
+
+
+</div>
+
+
+
+))
+
+
+}
+
+
+
+</div>
+
+
+)
+
+
+}
+
+
+
+</main>
+
+
+);
+
 
 }

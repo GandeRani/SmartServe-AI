@@ -1,329 +1,743 @@
-export default function Home() {
-
-  const features = [
-    {
-      icon: "👨‍🍳",
-      title: "AI Kitchen Assistant",
-      text: "Automatically prioritize orders and help chefs reduce preparation time."
-    },
-    {
-      icon: "📦",
-      title: "Smart Inventory",
-      text: "Predict stock requirements and prevent food wastage using AI."
-    },
-    {
-      icon: "📊",
-      title: "Business Intelligence",
-      text: "Analyze revenue, customer trends, and restaurant performance."
-    }
-  ];
-
-
-  return (
-
-    <main className="min-h-screen bg-gray-100 dark:bg-gray-950">
+"use client";
 
 
-      {/* Hero Section */}
+import Link from "next/link";
 
-      <section
-        className="
-        grid md:grid-cols-2
-        gap-10
-        items-center
-        px-10
-        py-24
-        bg-gradient-to-br
-        from-blue-700
-        via-purple-600
-        to-indigo-700
-        "
-      >
 
 
-        {/* Left Content */}
+export default function Home(){
 
-        <div>
 
 
-          <h1
-            className="
-            text-5xl
-            md:text-6xl
-            font-bold
-            text-white
-            leading-tight
-            "
-          >
+const features = [
 
-            Smart Restaurant
-            <br />
-            Management
-            <br />
-            Powered by AI 🤖
 
-          </h1>
+{
+icon:"🤖",
+title:"AI Food Recommendation",
+text:
+"SmartServe AI analyzes customer orders and recommends popular dishes automatically."
+},
 
 
+{
+icon:"👨‍🍳",
+title:"Smart Kitchen Assistant",
+text:
+"Manage kitchen workflow, prioritize orders and reduce preparation time."
+},
 
-          <p
-            className="
-            mt-6
-            text-lg
-            text-blue-100
-            max-w-xl
-            "
-          >
 
-            SmartServe AI helps restaurants automate kitchen operations,
-            optimize inventory, and make data-driven decisions in real time.
+{
+icon:"📦",
+title:"Smart Inventory Prediction",
+text:
+"AI predicts ingredient demand and alerts restaurants before stock shortages."
+},
 
-          </p>
 
+{
+icon:"📈",
+title:"Sales Forecasting",
+text:
+"Predict future revenue and understand restaurant performance using AI analytics."
+},
 
 
+{
+icon:"📊",
+title:"Business Intelligence",
+text:
+"Track orders, customers and restaurant growth from one dashboard."
+},
 
-          <div className="mt-8 flex gap-5">
 
+{
+icon:"💬",
+title:"AI Chat Assistant",
+text:
+"Ask SmartServe AI about menu, recommendations, inventory and sales."
+}
 
-            <a
-              href="/menu"
-              className="
-              bg-white
-              text-blue-700
-              px-7 py-3
-              rounded-xl
-              font-semibold
-              hover:scale-105
-              transition
-              "
-            >
-              Explore Menu 🍽️
-            </a>
 
+];
 
 
-            <a
-              href="/dashboard"
-              className="
-              border
-              border-white
-              text-white
-              px-7 py-3
-              rounded-xl
-              hover:bg-white
-              hover:text-blue-700
-              transition
-              "
-            >
-              View Dashboard 📊
-            </a>
 
 
-          </div>
 
 
-        </div>
+return(
 
 
 
+<main className="
+min-h-screen
+bg-gray-950
+text-white
+">
 
 
-        {/* AI Dashboard Preview */}
 
-        <div
-          className="
-          bg-white/20
-          backdrop-blur-lg
-          rounded-3xl
-          p-8
-          shadow-2xl
-          "
-        >
 
 
-          <div
-            className="
-            bg-white
-            dark:bg-gray-900
-            rounded-2xl
-            p-6
-            "
-          >
 
+{/* HERO */}
 
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-              AI Restaurant Assistant
-            </h2>
 
 
-            <div className="mt-6 space-y-4">
+<section className="
+grid
+md:grid-cols-2
+gap-12
+items-center
+px-10
+py-28
+bg-gradient-to-br
+from-blue-700
+via-purple-700
+to-indigo-800
+">
 
 
-              <div className="p-4 rounded-xl bg-blue-100 dark:bg-gray-800">
 
-                🍔 Order #101
 
-                <p className="text-sm">
-                  Priority: HIGH
-                </p>
 
-              </div>
+<div>
 
 
 
-              <div className="p-4 rounded-xl bg-purple-100 dark:bg-gray-800">
+<div className="
+inline-block
+bg-white/20
+px-5
+py-2
+rounded-full
+mb-6
+">
 
-                📦 Inventory Alert
+🚀 AI Powered Restaurant Platform
 
-                <p className="text-sm">
-                  Chicken stock running low
-                </p>
+</div>
 
-              </div>
 
 
 
 
-              <div className="p-4 rounded-xl bg-green-100 dark:bg-gray-800">
+<h1 className="
+text-5xl
+md:text-7xl
+font-extrabold
+leading-tight
+">
 
-                📈 Revenue Prediction
 
-                <p className="text-sm">
-                  +18% growth expected
-                </p>
+SmartServe AI
 
-              </div>
 
+<br/>
 
 
-            </div>
+<span className="
+text-yellow-300
+">
 
+Smart Restaurants,
+Smarter Decisions
 
-          </div>
+</span>
 
 
-        </div>
+</h1>
 
 
-      </section>
 
 
 
 
+<p className="
+mt-6
+text-xl
+text-blue-100
+max-w-xl
+">
 
 
-      {/* Statistics */}
+An intelligent restaurant ecosystem powered by AI
+for ordering, kitchen management, analytics,
+recommendations and demand prediction.
 
-      <section className="grid md:grid-cols-3 gap-6 px-10 mt-16">
 
+</p>
 
-        <Stat number="10K+" text="Orders Managed"/>
 
-        <Stat number="99%" text="AI Accuracy"/>
 
-        <Stat number="24/7" text="Smart Monitoring"/>
 
 
-      </section>
 
 
+<div className="
+flex
+gap-5
+mt-10
+flex-wrap
+">
 
 
+<Link
 
+href="/menu"
 
-      {/* Features */}
+className="
+bg-white
+text-blue-700
+px-8
+py-4
+rounded-xl
+font-bold
+hover:scale-105
+transition
+"
 
-      <section className="grid md:grid-cols-3 gap-6 p-10 mt-10">
+>
 
+🍽 Explore Menu
 
-        {
-          features.map((feature,index)=>(
+</Link>
 
-            <div
-              key={index}
-              className="
-              bg-white
-              dark:bg-gray-900
-              rounded-2xl
-              shadow-lg
-              p-6
-              hover:-translate-y-2
-              transition
-              "
-            >
 
-              <div className="text-4xl">
-                {feature.icon}
-              </div>
 
 
-              <h2 className="mt-4 text-xl font-bold text-gray-900 dark:text-white">
 
-                {feature.title}
 
-              </h2>
+<Link
 
+href="/admin/login"
 
-              <p className="mt-3 text-gray-600 dark:text-gray-300">
+className="
+border
+border-white
+px-8
+py-4
+rounded-xl
+font-bold
+hover:bg-white
+hover:text-blue-700
+transition
+"
 
-                {feature.text}
+>
 
-              </p>
+🔐 Admin
 
+</Link>
 
-            </div>
 
-          ))
-        }
 
+</div>
 
-      </section>
 
 
-    </main>
 
-  );
+
+
+</div>
+
+
+
+
+
+
+
+
+
+{/* AI PREVIEW */}
+
+
+
+<div className="
+bg-white/20
+backdrop-blur-xl
+rounded-3xl
+p-8
+shadow-2xl
+">
+
+
+
+<div className="
+bg-gray-900
+rounded-2xl
+p-6
+">
+
+
+
+<h2 className="
+text-2xl
+font-bold
+">
+
+🤖 SmartServe AI Dashboard
+
+</h2>
+
+
+
+
+
+<div className="
+space-y-4
+mt-6
+">
+
+
+
+<div className="
+bg-blue-900
+p-4
+rounded-xl
+">
+
+🍔 Order Management
+
+<p className="text-gray-300">
+
+AI Priority: HIGH
+
+</p>
+
+</div>
+
+
+
+
+
+<div className="
+bg-purple-900
+p-4
+rounded-xl
+">
+
+📦 Inventory Alert
+
+<p className="text-gray-300">
+
+Chicken stock prediction active
+
+</p>
+
+</div>
+
+
+
+
+
+
+
+<div className="
+bg-green-900
+p-4
+rounded-xl
+">
+
+📈 Sales Forecast
+
+<p className="text-gray-300">
+
+Future demand prediction enabled
+
+</p>
+
+</div>
+
+
+
+
+</div>
+
+
+
+</div>
+
+
+</div>
+
+
+
+
+</section>
+
+
+
+
+
+
+
+
+
+
+{/* STATS */}
+
+
+
+<section className="
+grid
+md:grid-cols-4
+gap-6
+px-10
+py-16
+">
+
+
+
+<Stat
+
+number="500+"
+
+text="Orders Processed"
+
+/>
+
+
+<Stat
+
+number="AI"
+
+text="Smart Recommendations"
+
+/>
+
+
+
+<Stat
+
+number="24/7"
+
+text="Restaurant Monitoring"
+
+/>
+
+
+
+<Stat
+
+number="100%"
+
+text="Data Driven"
+
+/>
+
+
+
+</section>
+
+
+
+
+
+
+
+
+
+{/* FEATURES */}
+
+
+
+<section className="
+px-10
+pb-20
+">
+
+
+
+<h2 className="
+text-4xl
+font-bold
+text-center
+mb-12
+">
+
+Powerful SmartServe Features 🚀
+
+</h2>
+
+
+
+
+
+<div className="
+grid
+md:grid-cols-3
+gap-8
+">
+
+
+
+{
+
+features.map((feature,index)=>(
+
+
+<div
+
+key={index}
+
+className="
+bg-gray-900
+rounded-2xl
+p-8
+border
+border-gray-800
+hover:border-blue-500
+hover:-translate-y-2
+transition
+"
+
+>
+
+
+
+<div className="text-5xl">
+
+{feature.icon}
+
+</div>
+
+
+
+
+
+<h3 className="
+text-2xl
+font-bold
+mt-5
+">
+
+{feature.title}
+
+</h3>
+
+
+
+
+
+<p className="
+text-gray-400
+mt-4
+">
+
+{feature.text}
+
+</p>
+
+
+
+</div>
+
+
+))
+
+
+}
+
+
+
+</div>
+
+
+
+</section>
+
+
+
+
+
+
+
+
+
+{/* DASHBOARD LINKS */}
+
+
+
+<section className="
+px-10
+pb-20
+">
+
+
+
+<div className="
+bg-gradient-to-r
+from-blue-900
+to-purple-900
+rounded-3xl
+p-10
+text-center
+">
+
+
+<h2 className="
+text-3xl
+font-bold
+">
+
+Explore SmartServe AI
+
+</h2>
+
+
+
+
+<div className="
+flex
+justify-center
+gap-5
+flex-wrap
+mt-8
+">
+
+
+<Link
+href="/dashboard/analytics"
+className="
+bg-white
+text-black
+px-6
+py-3
+rounded-xl
+font-bold
+"
+>
+
+📊 Analytics
+
+</Link>
+
+
+
+
+
+<Link
+href="/kitchen"
+className="
+bg-white
+text-black
+px-6
+py-3
+rounded-xl
+font-bold
+"
+>
+
+👨‍🍳 Kitchen
+
+</Link>
+
+
+
+
+
+<Link
+href="/recommendation"
+className="
+bg-white
+text-black
+px-6
+py-3
+rounded-xl
+font-bold
+"
+>
+
+🤖 AI Recommendation
+
+</Link>
+
+
+
+
+</div>
+
+
+</div>
+
+
+</section>
+
+
+
+
+
+
+
+</main>
+
+
+);
+
+
+
 }
 
 
 
 
 
-function Stat(
-  {
-    number,
-    text
-  }:
-  {
-    number:string,
-    text:string
-  }
-){
 
-  return (
 
-    <div
-      className="
-      bg-white
-      dark:bg-gray-900
-      rounded-2xl
-      shadow
-      p-8
-      text-center
-      "
-    >
+function Stat({
 
-      <h2 className="text-4xl font-bold text-blue-600">
-        {number}
-      </h2>
+number,
 
-      <p className="mt-2 text-gray-600 dark:text-gray-300">
-        {text}
-      </p>
+text
 
-    </div>
+}:{
 
-  );
+number:string;
+
+text:string;
+
+}){
+
+
+return(
+
+
+<div className="
+bg-gray-900
+rounded-2xl
+p-8
+text-center
+">
+
+
+<h2 className="
+text-4xl
+font-bold
+text-blue-400
+">
+
+{number}
+
+</h2>
+
+
+<p className="
+mt-3
+text-gray-300
+">
+
+{text}
+
+</p>
+
+
+</div>
+
+
+);
+
 
 }

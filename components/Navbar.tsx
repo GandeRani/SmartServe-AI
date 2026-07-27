@@ -1,288 +1,421 @@
 "use client";
 
 import Link from "next/link";
-import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
-import { useCart } from "@/components/CartContext";
 
 
 export default function Navbar() {
 
 
-  const { theme, setTheme } = useTheme();
+const [cartCount,setCartCount] = useState(0);
 
-  const { cart } = useCart();
 
-  const [mounted, setMounted] = useState(false);
 
 
 
-  useEffect(() => {
+async function loadCartCount(){
 
-    setMounted(true);
 
-  }, []);
+try{
 
 
+const res = await fetch("/api/cart");
 
 
-  return (
+const data = await res.json();
 
-    <nav
-      className="
-      sticky
-      top-0
-      z-50
-      flex
-      justify-between
-      items-center
-      px-8
-      py-4
-      bg-white/80
-      dark:bg-gray-900/80
-      backdrop-blur-lg
-      shadow-md
-      "
-    >
 
 
+if(Array.isArray(data)){
 
-      {/* Logo */}
 
-      <Link
-        href="/"
-        className="
-        flex
-        items-center
-        gap-2
-        text-2xl
-        font-bold
-        text-gray-900
-        dark:text-white
-        "
-      >
+const count = data.reduce(
 
-        🍽️ SmartServe AI
+(sum,item)=>
 
-      </Link>
+sum + item.quantity,
 
+0
 
+);
 
 
+setCartCount(count);
 
-      {/* Navigation */}
 
-      <div
-        className="
-        flex
-        items-center
-        gap-8
-        "
-      >
+}
 
 
+}
 
-        <Link
-          href="/"
-          className="
-          text-gray-700
-          dark:text-gray-200
-          hover:text-blue-600
-          transition
-          "
-        >
-          Home
-        </Link>
+catch(error){
 
 
+console.log(
+"Cart count error",
+error
+);
 
 
+}
 
-        <Link
-          href="/menu"
-          className="
-          text-gray-700
-          dark:text-gray-200
-          hover:text-blue-600
-          transition
-          "
-        >
-          Menu
-        </Link>
 
+}
 
 
 
 
-        <Link
-          href="/kitchen"
-          className="
-          text-gray-700
-          dark:text-gray-200
-          hover:text-blue-600
-          transition
-          "
-        >
-          Kitchen
-        </Link>
 
 
 
+useEffect(()=>{
 
 
-        <Link
-          href="/dashboard"
-          className="
-          text-gray-700
-          dark:text-gray-200
-          hover:text-blue-600
-          transition
-          "
-        >
-          Dashboard
-        </Link>
+loadCartCount();
 
 
 
+window.addEventListener(
 
+"cartUpdated",
 
-        {/* Orders */}
+loadCartCount
 
-        <Link
-          href="/orders"
-          className="
-          text-gray-700
-          dark:text-gray-200
-          hover:text-blue-600
-          transition
-          "
-        >
-          Orders 📦
-        </Link>
+);
 
 
 
+return()=>{
 
 
+window.removeEventListener(
 
+"cartUpdated",
 
-        {/* Cart */}
+loadCartCount
 
-        <Link
-          href="/cart"
-          className="
-          relative
-          text-gray-700
-          dark:text-gray-200
-          hover:text-blue-600
-          transition
-          "
-        >
+);
 
-          🛒 Cart
 
+};
 
-          {
-            cart.length > 0 && (
 
-              <span
-                className="
-                absolute
-                -top-3
-                -right-4
-                bg-red-500
-                text-white
-                text-xs
-                w-5
-                h-5
-                rounded-full
-                flex
-                items-center
-                justify-center
-                "
-              >
 
-                {cart.length}
+},[]);
 
-              </span>
 
-            )
-          }
 
 
-        </Link>
 
 
 
 
 
+return(
 
 
-        {/* Login */}
+<nav
 
-        <button
-          className="
-          bg-blue-600
-          text-white
-          px-5
-          py-2
-          rounded-lg
-          hover:bg-blue-700
-          transition
-          "
-        >
+className="
+fixed
+top-0
+left-0
+right-0
+z-50
+bg-white
+dark:bg-gray-900
+shadow-md
+px-6
+py-4
+"
 
-          Login
+>
 
-        </button>
 
 
+<div
 
+className="
+flex
+justify-between
+items-center
+"
 
+>
 
 
 
-        {/* Dark Mode */}
 
-        <button
+{/* LOGO */}
 
-          onClick={() =>
-            setTheme(
-              theme === "dark"
-              ? "light"
-              : "dark"
-            )
-          }
 
-          className="
-          px-4
-          py-2
-          rounded-lg
-          bg-gray-900
-          text-white
-          dark:bg-white
-          dark:text-black
-          "
+<Link
 
-        >
+href="/"
 
-          {
-            mounted && theme === "dark"
-            ? "☀️"
-            : "🌙"
-          }
+className="
+text-2xl
+font-bold
+text-blue-600
+"
 
+>
 
-        </button>
+SmartServe AI 🤖
 
+</Link>
 
 
-      </div>
 
 
 
-    </nav>
 
-  );
+
+
+
+{/* MENU */}
+
+
+<div
+
+className="
+flex
+gap-5
+items-center
+text-sm
+"
+
+>
+
+
+
+
+
+<Link
+
+href="/"
+
+className="
+dark:text-white
+hover:text-blue-500
+"
+
+>
+
+Home
+
+</Link>
+
+
+
+
+
+
+
+
+<Link
+
+href="/menu"
+
+className="
+dark:text-white
+hover:text-blue-500
+"
+
+>
+
+🍽 Menu
+
+</Link>
+
+
+
+
+
+
+
+
+<Link
+
+href="/cart"
+
+className="
+dark:text-white
+hover:text-blue-500
+"
+
+>
+
+🛒 Cart ({cartCount})
+
+</Link>
+
+
+
+
+
+
+
+
+<Link
+
+href="/orders"
+
+className="
+dark:text-white
+hover:text-blue-500
+"
+
+>
+
+📦 Orders
+
+</Link>
+
+
+
+
+
+
+
+
+
+<Link
+
+href="/kitchen"
+
+className="
+dark:text-white
+hover:text-blue-500
+"
+
+>
+
+👨‍🍳 Kitchen
+
+</Link>
+
+
+
+
+
+
+
+
+
+{/* ANALYTICS */}
+
+
+<Link
+
+href="/dashboard/analytics"
+
+className="
+dark:text-white
+hover:text-blue-500
+"
+
+>
+
+📈 Analytics
+
+</Link>
+
+
+
+
+
+
+
+
+{/* AI SALES */}
+
+
+<Link
+
+href="/dashboard/ai-sales"
+
+className="
+dark:text-white
+hover:text-blue-500
+"
+
+>
+
+🤖 AI Sales
+
+</Link>
+
+
+
+
+
+
+
+
+{/* AI FORECAST */}
+
+
+<Link
+
+href="/dashboard/demand"
+
+className="
+dark:text-white
+hover:text-blue-500
+"
+
+>
+
+🔮 Forecast
+
+</Link>
+
+
+
+
+
+
+
+
+{/* ADMIN */}
+
+
+<Link
+
+href="/admin/login"
+
+className="
+dark:text-white
+hover:text-blue-500
+font-semibold
+"
+
+>
+
+🔐 Admin
+
+</Link>
+
+
+
+
+
+</div>
+
+
+
+
+
+
+</div>
+
+
+
+</nav>
+
+
+);
+
 
 }

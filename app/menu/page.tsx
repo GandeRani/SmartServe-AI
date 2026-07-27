@@ -1,84 +1,62 @@
 "use client";
 
-import { useState } from "react";
-import { useCart } from "@/components/CartContext";
+import { useEffect, useState } from "react";
 
 
 export default function MenuPage() {
 
-  const { addToCart } = useCart();
 
-  const [category, setCategory] = useState("All");
-  const [search, setSearch] = useState("");
+  const [menuItems,setMenuItems] = useState<any[]>([]);
+
+  const [category,setCategory] = useState("All");
+
+  const [search,setSearch] = useState("");
 
 
-  const menuItems = [
 
-    {
-      name: "Chicken Burger",
-      image: "/images/Burger.png",
-      category: "Burger",
-      price: "₹199",
-      rating: "⭐⭐⭐⭐⭐",
-      time: "15 min",
-      description: "Juicy chicken burger with fresh vegetables"
-    },
 
-    {
-      name: "Margherita Pizza",
-      image: "/images/Pizza.png",
-      category: "Pizza",
-      price: "₹299",
-      rating: "⭐⭐⭐⭐⭐",
-      time: "20 min",
-      description: "Classic cheese pizza with tomato sauce"
-    },
+  useEffect(()=>{
 
-    {
-      name: "Cold Coffee",
-      image: "/images/Cold coffee.png",
-      category: "Drinks",
-      price: "₹99",
-      rating: "⭐⭐⭐⭐",
-      time: "5 min",
-      description: "Refreshing chilled coffee"
-    },
 
-    {
-      name: "Pasta",
-      image: "/images/Pasta.png",
-      category: "Italian",
-      price: "₹249",
-      rating: "⭐⭐⭐⭐⭐",
-      time: "18 min",
-      description: "Creamy Italian pasta"
-    },
+    async function loadMenu(){
 
-    {
-      name: "French Fries",
-      image: "/images/French fries.png",
-      category: "Snacks",
-      price: "₹129",
-      rating: "⭐⭐⭐⭐",
-      time: "10 min",
-      description: "Crispy golden french fries"
-    },
 
-    {
-      name: "Chocolate Cake",
-      image: "/images/Chocolate cake.png",
-      category: "Dessert",
-      price: "₹199",
-      rating: "⭐⭐⭐⭐⭐",
-      time: "8 min",
-      description: "Soft chocolate dessert"
+      try{
+
+
+        const res = await fetch("/api/menu");
+
+        const data = await res.json();
+
+        setMenuItems(data);
+
+
+      }
+      catch(error){
+
+        console.log(
+          "Menu loading error",
+          error
+        );
+
+      }
+
+
     }
 
-  ];
+
+    loadMenu();
+
+
+  },[]);
 
 
 
-  const categories = [
+
+
+
+  const categories=[
+
     "All",
     "Pizza",
     "Burger",
@@ -86,32 +64,138 @@ export default function MenuPage() {
     "Italian",
     "Snacks",
     "Dessert"
+
   ];
+
+
+
+
 
 
 
   const filteredItems = menuItems.filter((item)=>{
 
+
     const categoryMatch =
-      category === "All" ||
-      item.category === category;
+      category==="All" ||
+      item.category===category;
+
 
 
     const searchMatch =
       item.name
       .toLowerCase()
-      .includes(search.toLowerCase());
+      .includes(
+        search.toLowerCase()
+      );
+
 
 
     return categoryMatch && searchMatch;
 
+
   });
+
+
+
+
+
+
+
+
+
+  async function addToCart(item:any){
+
+
+    try{
+
+
+      const response = await fetch(
+        "/api/cart",
+        {
+
+          method:"POST",
+
+          headers:{
+
+            "Content-Type":"application/json"
+
+          },
+
+
+          body:JSON.stringify({
+
+            userId:1,
+
+            menuId:item.id,
+
+            quantity:1
+
+          })
+
+
+        }
+      );
+
+
+
+
+      if(response.ok){
+
+
+        alert(
+          `${item.name} added to cart 🛒`
+        );
+
+
+        // update navbar count immediately
+
+        window.dispatchEvent(
+          new Event("cartUpdated")
+        );
+
+
+      }
+      else{
+
+
+        alert(
+          "Failed to add cart item"
+        );
+
+
+      }
+
+
+    }
+    catch(error){
+
+
+      console.log(
+        "Cart error",
+        error
+      );
+
+
+    }
+
+
+  }
+
+
+
+
+
+
+
+
 
 
 
   return (
 
     <main
+
       className="
       min-h-screen
       bg-gray-100
@@ -120,10 +204,14 @@ export default function MenuPage() {
       px-10
       pb-10
       "
+
     >
 
 
+
+
       <h1
+
         className="
         text-5xl
         font-bold
@@ -131,37 +219,54 @@ export default function MenuPage() {
         text-gray-900
         dark:text-white
         "
+
       >
+
         SmartServe Menu 🍽️
+
       </h1>
 
 
 
+
+
       <p
+
         className="
         text-center
         mt-4
         text-gray-600
         dark:text-gray-300
         "
+
       >
+
         Choose your favourite dishes
+
       </p>
 
 
 
 
-      {/* Search */}
+
+
 
       <div className="flex justify-center mt-8">
 
+
         <input
+
 
           value={search}
 
-          onChange={(e)=>setSearch(e.target.value)}
+
+          onChange={(e)=>
+            setSearch(e.target.value)
+          }
+
 
           placeholder="Search food..."
+
 
           className="
           w-full
@@ -176,7 +281,9 @@ export default function MenuPage() {
           dark:text-white
           "
 
+
         />
+
 
       </div>
 
@@ -184,9 +291,12 @@ export default function MenuPage() {
 
 
 
-      {/* Categories */}
+
+
+
 
       <div
+
         className="
         flex
         justify-center
@@ -194,39 +304,57 @@ export default function MenuPage() {
         gap-4
         mt-8
         "
+
       >
 
-        {categories.map((cat)=>(
 
-          <button
+        {
+          categories.map((cat)=>(
 
-            key={cat}
 
-            onClick={()=>setCategory(cat)}
+            <button
 
-            className={`
-            px-5
-            py-2
-            rounded-xl
-            transition
 
-            ${
-              category === cat
-              ?
-              "bg-blue-600 text-white"
-              :
-              "bg-white dark:bg-gray-900 text-gray-900 dark:text-white"
-            }
+              key={cat}
 
-            `}
 
-          >
+              onClick={()=>
+                setCategory(cat)
+              }
 
-            {cat}
 
-          </button>
+              className={`
 
-        ))}
+              px-5
+              py-2
+              rounded-xl
+
+              ${
+                category===cat
+
+                ?
+
+                "bg-blue-600 text-white"
+
+                :
+
+                "bg-white dark:bg-gray-900 text-gray-900 dark:text-white"
+
+              }
+
+              `}
+
+
+            >
+
+              {cat}
+
+
+            </button>
+
+
+          ))
+        }
 
 
       </div>
@@ -236,10 +364,11 @@ export default function MenuPage() {
 
 
 
-      {/* Menu Cards */}
+
 
 
       <section
+
         className="
         grid
         sm:grid-cols-2
@@ -248,163 +377,178 @@ export default function MenuPage() {
         gap-8
         mt-12
         "
+
       >
 
 
-        {filteredItems.map((item,index)=>(
+
+        {
+          filteredItems.map((item)=>(
 
 
-          <div
-
-            key={index}
-
-            className="
-            bg-white
-            dark:bg-gray-900
-            rounded-2xl
-            shadow-lg
-            overflow-hidden
-            hover:-translate-y-2
-            transition
-            "
-
-          >
+            <div
 
 
+              key={item.id}
 
-            <img
-
-              src={item.image}
-
-              alt={item.name}
 
               className="
-              w-full
-              h-48
-              object-cover
+              bg-white
+              dark:bg-gray-900
+              rounded-2xl
+              shadow-lg
+              overflow-hidden
+              hover:-translate-y-2
+              transition
               "
 
-            />
+
+            >
 
 
 
 
-            <div className="p-6">
+              <img
 
 
-              <h2
+                src={item.image}
+
+
+                alt={item.name}
+
+
                 className="
-                text-xl
-                font-bold
-                text-gray-900
-                dark:text-white
+                w-full
+                h-48
+                object-cover
                 "
-              >
-
-                {item.name}
-
-              </h2>
 
 
-
-              <p className="mt-2">
-
-                {item.rating}
-
-              </p>
-
-
-
-
-              <p
-                className="
-                mt-3
-                text-gray-600
-                dark:text-gray-300
-                "
-              >
-
-                {item.description}
-
-              </p>
+              />
 
 
 
 
 
-              <div
-                className="
-                flex
-                justify-between
-                mt-4
-                "
-              >
 
-                <span className="font-bold text-blue-600">
 
-                  {item.price}
-
-                </span>
+              <div className="p-6">
 
 
 
-                <span>
+                <h2
 
-                  ⏱ {item.time}
+                  className="
+                  text-xl
+                  font-bold
+                  text-gray-900
+                  dark:text-white
+                  "
 
-                </span>
+                >
+
+                  {item.name}
+
+                </h2>
+
+
+
+
+
+                <p
+
+                  className="
+                  mt-3
+                  text-gray-600
+                  dark:text-gray-300
+                  "
+
+                >
+
+                  {item.description}
+
+                </p>
+
+
+
+
+
+
+
+                <div
+
+                  className="
+                  flex
+                  justify-between
+                  mt-4
+                  "
+
+                >
+
+
+                  <span className="font-bold text-blue-600">
+
+                    ₹{item.price}
+
+                  </span>
+
+
+
+                  <span>
+
+                    {item.category}
+
+                  </span>
+
+
+                </div>
+
+
+
+
+
+
+
+                <button
+
+
+                  onClick={()=>
+                    addToCart(item)
+                  }
+
+
+                  className="
+                  mt-5
+                  w-full
+                  bg-blue-600
+                  text-white
+                  py-3
+                  rounded-xl
+                  hover:bg-blue-700
+                  transition
+                  "
+
+
+                >
+
+                  Add to Cart 🛒
+
+
+                </button>
+
+
 
 
               </div>
 
 
 
-
-
-              <button
-
-                onClick={()=>{
-
-                  addToCart({
-
-                    name:item.name,
-
-                    price:item.price,
-
-                    image:item.image
-
-                  });
-
-                  alert(`${item.name} added to cart`);
-
-                }}
-
-                className="
-                mt-5
-                w-full
-                bg-blue-600
-                text-white
-                py-3
-                rounded-xl
-                hover:bg-blue-700
-                transition
-                "
-
-              >
-
-                Add to Cart 🛒
-
-              </button>
-
-
-
             </div>
 
 
-          </div>
 
-
-        ))}
+          ))
+        }
 
 
 
@@ -412,8 +556,11 @@ export default function MenuPage() {
 
 
 
+
+
     </main>
 
   );
+
 
 }

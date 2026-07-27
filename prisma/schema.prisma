@@ -1,0 +1,94 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../app/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String   @unique
+  password  String
+  role      String   @default("CUSTOMER")
+  createdAt DateTime @default(now())
+  carts     Cart[]
+  orders    Order[]
+  reviews   Review[]
+}
+
+model MenuItem {
+  id          Int         @id @default(autoincrement())
+  name        String
+  description String
+  price       Float
+  category    String
+  image       String?
+  available   Boolean     @default(true)
+  carts       Cart[]
+  orderItems  OrderItem[]
+}
+
+model Cart {
+  id       Int      @id @default(autoincrement())
+  userId   Int
+  menuId   Int
+  quantity Int      @default(1)
+  menu     MenuItem @relation(fields: [menuId], references: [id])
+  user     User     @relation(fields: [userId], references: [id])
+}
+
+model Order {
+  id        Int         @id @default(autoincrement())
+  userId    Int
+  total     Float
+  status    String      @default("PLACED")
+  createdAt DateTime    @default(now())
+  user      User        @relation(fields: [userId], references: [id])
+  items     OrderItem[]
+}
+
+model OrderItem {
+  id       Int      @id @default(autoincrement())
+  orderId  Int
+  menuId   Int
+  quantity Int
+  menu     MenuItem @relation(fields: [menuId], references: [id])
+  order    Order    @relation(fields: [orderId], references: [id])
+}
+
+model Review {
+  id        Int     @id @default(autoincrement())
+  userId    Int
+  message   String
+  rating    Int
+  sentiment String?
+  user      User    @relation(fields: [userId], references: [id])
+}
+
+model Recommendation {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  foodName  String
+  reason    String
+  createdAt DateTime @default(now())
+}
+
+model SalesPrediction {
+  id        Int      @id @default(autoincrement())
+  date      DateTime
+  itemName  String
+  predicted Int
+  createdAt DateTime @default(now())
+}
+
+model Inventory {
+  id        Int      @id @default(autoincrement())
+  name      String
+  unit      String
+  createdAt DateTime @default(now())
+  minStock  Float
+  quantity  Float
+}

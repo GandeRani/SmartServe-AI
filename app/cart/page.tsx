@@ -1,24 +1,223 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
-import { useCart } from "@/components/CartContext";
 
 
 export default function CartPage() {
 
 
-  const {
-    cart,
-    removeFromCart
-  } = useCart();
+  const [cart,setCart] = useState<any[]>([]);
+  const [loading,setLoading] = useState(true);
+
+
+
+
+  async function loadCart(){
+
+
+    try{
+
+
+      const res = await fetch(
+        "/api/cart",
+        {
+          cache:"no-store"
+        }
+      );
+
+
+      const data = await res.json();
+
+
+
+      if(Array.isArray(data)){
+
+        setCart(data);
+
+      }
+      else{
+
+        setCart([]);
+
+      }
+
+
+
+    }
+    catch(error){
+
+
+      console.log(
+        "Cart fetch error:",
+        error
+      );
+
+
+      setCart([]);
+
+
+    }
+    finally{
+
+
+      setLoading(false);
+
+
+    }
+
+
+  }
+
+
+
+
+
+
+
+  useEffect(()=>{
+
+
+    loadCart();
+
+
+  },[]);
+
+
+
+
+
+
+
+
+
+  async function removeItem(id:number){
+
+
+    console.log(
+      "Deleting cart item:",
+      id
+    );
+
+
+
+    try{
+
+
+      const res = await fetch(
+
+        `/api/cart/${id}`,
+
+        {
+          method:"DELETE"
+        }
+
+      );
+
+
+
+      const data = await res.json();
+
+
+
+      console.log(
+        "Delete response:",
+        data
+      );
+
+
+
+
+
+      if(res.ok){
+
+
+        await loadCart();
+
+
+
+        window.dispatchEvent(
+          new Event("cartUpdated")
+        );
+
+
+      }
+      else{
+
+
+        alert(
+          "Failed to remove item"
+        );
+
+
+      }
+
+
+
+    }
+    catch(error){
+
+
+      console.log(
+        "Remove error:",
+        error
+      );
+
+
+    }
+
+
+  }
+
+
+
+
 
 
 
   const total = cart.reduce(
-    (sum:number, item:any) =>
-      sum + Number(item.price.replace("₹","")),
+
+    (sum,item)=>
+
+      sum +
+      item.menu.price *
+      item.quantity,
+
     0
+
   );
+
+
+
+
+
+
+
+  if(loading){
+
+
+    return (
+
+      <main className="min-h-screen flex items-center justify-center">
+
+
+        <h1 className="text-2xl">
+
+          Loading Cart...
+
+        </h1>
+
+
+      </main>
+
+    );
+
+
+  }
+
+
+
+
 
 
 
@@ -26,6 +225,7 @@ export default function CartPage() {
   return (
 
     <main
+
       className="
       min-h-screen
       bg-gray-100
@@ -34,11 +234,14 @@ export default function CartPage() {
       px-10
       pb-10
       "
+
     >
 
 
 
+
       <h1
+
         className="
         text-5xl
         font-bold
@@ -46,6 +249,7 @@ export default function CartPage() {
         text-gray-900
         dark:text-white
         "
+
       >
 
         🛒 Your Cart
@@ -56,32 +260,31 @@ export default function CartPage() {
 
 
 
+
+
+
       {
-        cart.length === 0 ? (
+        cart.length === 0 ?
 
 
-          <div
-            className="
-            text-center
-            mt-20
-            "
-          >
+        (
 
-            <p
-              className="
-              text-2xl
-              text-gray-600
-              dark:text-gray-300
-              "
-            >
+          <div className="text-center mt-20">
 
-              Your cart is empty 😔
+
+            <p className="text-2xl text-gray-600 dark:text-gray-300">
+
+              Cart is empty 😔
 
             </p>
 
 
+
+
             <Link
+
               href="/menu"
+
               className="
               inline-block
               mt-6
@@ -91,9 +294,11 @@ export default function CartPage() {
               py-3
               rounded-xl
               "
+
             >
 
-              Go to Menu 🍽️
+              Go To Menu 🍽️
+
 
             </Link>
 
@@ -101,58 +306,54 @@ export default function CartPage() {
           </div>
 
 
-        ) : (
+        )
+
+
+        :
 
 
 
-          <div
-            className="
-            max-w-4xl
-            mx-auto
-            mt-12
-            "
-          >
+        (
+
+          <div className="max-w-4xl mx-auto mt-12">
+
+
 
 
 
             {
-              cart.map((item:any,index:number)=>(
+              cart.map((item)=>(
 
 
                 <div
 
-                  key={index}
+                  key={item.id}
 
                   className="
-                  flex
-                  items-center
-                  justify-between
                   bg-white
                   dark:bg-gray-900
                   rounded-2xl
+                  shadow-lg
                   p-5
                   mb-5
-                  shadow-lg
+                  flex
+                  justify-between
+                  items-center
                   "
 
                 >
 
 
 
-                  <div
-                    className="
-                    flex
-                    items-center
-                    gap-5
-                    "
-                  >
+
+                  <div className="flex items-center gap-5">
 
 
                     <img
 
-                      src={item.image}
+                      src={item.menu.image}
 
-                      alt={item.name}
+                      alt={item.menu.name}
 
                       className="
                       w-24
@@ -166,41 +367,47 @@ export default function CartPage() {
 
 
 
+
                     <div>
 
 
                       <h2
+
                         className="
                         text-xl
                         font-bold
                         text-gray-900
                         dark:text-white
                         "
+
                       >
 
-                        {item.name}
+                        {item.menu.name}
+
 
                       </h2>
 
 
 
 
-                      <p
-                        className="
-                        text-blue-600
-                        font-bold
-                        mt-2
-                        "
-                      >
+                      <p className="text-blue-600 font-bold mt-2">
 
-                        {item.price}
+                        ₹{item.menu.price}
+
+                      </p>
+
+
+
+
+                      <p>
+
+                        Quantity: {item.quantity}
 
                       </p>
 
 
 
                     </div>
-
 
 
                   </div>
@@ -210,11 +417,12 @@ export default function CartPage() {
 
 
 
+
                   <button
 
-                    onClick={() =>
-                      removeFromCart(index)
-                    }
+
+                    onClick={()=>removeItem(item.id)}
+
 
                     className="
                     bg-red-500
@@ -224,16 +432,18 @@ export default function CartPage() {
                     py-2
                     rounded-xl
                     "
+
                   >
 
                     Remove
+
 
                   </button>
 
 
 
-                </div>
 
+                </div>
 
 
               ))
@@ -246,20 +456,24 @@ export default function CartPage() {
 
 
 
+
             <div
+
               className="
               bg-white
               dark:bg-gray-900
               rounded-2xl
-              p-8
               shadow-lg
+              p-8
               mt-8
               "
+
             >
 
 
 
               <div
+
                 className="
                 flex
                 justify-between
@@ -268,18 +482,19 @@ export default function CartPage() {
                 text-gray-900
                 dark:text-white
                 "
+
               >
 
+
                 <span>
+
                   Total
+
                 </span>
 
 
-                <span
-                  className="
-                  text-blue-600
-                  "
-                >
+
+                <span className="text-blue-600">
 
                   ₹{total}
 
@@ -301,22 +516,22 @@ export default function CartPage() {
                 className="
                 block
                 text-center
-                mt-8
-                w-full
+                mt-6
                 bg-green-600
                 hover:bg-green-700
                 text-white
                 py-4
                 rounded-xl
-                text-xl
                 font-bold
                 "
 
               >
 
-                Proceed to Checkout 💳
+                Proceed To Checkout 💳
+
 
               </Link>
+
 
 
 
@@ -325,8 +540,8 @@ export default function CartPage() {
 
 
 
-          </div>
 
+          </div>
 
 
         )
@@ -335,9 +550,12 @@ export default function CartPage() {
 
 
 
+
+
+
     </main>
 
-
   );
+
 
 }
