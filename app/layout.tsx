@@ -8,147 +8,67 @@ import Navbar from "@/components/Navbar";
 import AIChat from "@/components/AIChat";
 import Footer from "@/components/Footer";
 
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 
 export const metadata: Metadata = {
-
-
   title: "SmartServe AI 🤖",
-
 
   description:
     "AI powered restaurant intelligence platform with smart ordering, AI recommendations, sales prediction, inventory forecasting and analytics.",
-
-
 };
 
 
-
-
-
-
-
 export default function RootLayout({
-
-
   children,
-
-
 }: Readonly<{
-
-
   children: React.ReactNode;
-
-
 }>) {
 
+  return (
+    <html
+      lang="en"
+      suppressHydrationWarning
+    >
 
+      <body>
 
-return (
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
 
+          <CartProvider>
 
-<html
+            {/* Top Navigation */}
+            <Navbar />
 
-lang="en"
 
-suppressHydrationWarning
+            {/* AI Assistant Floating Chat */}
+            <AIChat />
 
->
 
+            {/* Main Application Pages */}
+            {children}
 
 
-<body>
+            {/* Website Footer */}
+            <Footer />
 
 
+          </CartProvider>
 
 
-<ThemeProvider
+        </ThemeProvider>
 
 
-attribute="class"
+        {/* Vercel Performance Monitoring */}
+        <SpeedInsights />
 
+      </body>
 
-defaultTheme="system"
-
-
-enableSystem
-
-
-disableTransitionOnChange
-
-
->
-
-
-
-<CartProvider>
-
-
-
-
-{/* Top Navigation */}
-
-<Navbar />
-
-
-
-
-
-{/* AI Assistant Floating Chat */}
-
-<AIChat />
-
-
-
-
-
-
-{/* Main Application Pages */}
-
-{children}
-
-
-
-
-
-
-
-{/* Website Footer */}
-
-<Footer>
-
-</Footer>
-
-
-
-
-
-
-</CartProvider>
-
-
-
-
-
-
-</ThemeProvider>
-
-
-
-
-
-</body>
-
-
-
-
-
-</html>
-
-
-
-);
-
-
-
+    </html>
+  );
 }
