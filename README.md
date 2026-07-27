@@ -529,27 +529,6 @@ npm start
 
 ---
 
-# 🔮 Future Roadmap
-
-## Phase 1
-
-- Advanced authentication
-- Role-based access control
-- Cloud optimization
-
-## Phase 2
-
-- Mobile application
-- Multi-restaurant support
-- Real-time notifications
-
-## Phase 3
-
-- Voice-based AI assistant
-- Autonomous inventory optimization
-- Advanced personalization
-
----
 
 # 🌐 Repository
 
