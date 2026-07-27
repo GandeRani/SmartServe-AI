@@ -1,91 +1,63 @@
 import { NextResponse } from "next/server";
 import prisma from "@/app/lib/prisma";
 
+export const dynamic = "force-dynamic";
 
-export async function GET(){
+export async function GET() {
+  try {
+    const [
+      totalOrders,
+      totalSales,
+      users,
+      menuItems,
+      pendingOrders,
+      completedOrders,
+    ] = await Promise.all([
+      prisma.order.count(),
 
-try{
+      prisma.order.aggregate({
+        _sum: {
+          total: true,
+        },
+      }),
 
+      prisma.user.count(),
 
-const totalOrders = await prisma.order.count();
+      prisma.menuItem.count(),
 
+      prisma.order.count({
+        where: {
+          status: "Pending",
+        },
+      }),
 
-const totalSales = await prisma.order.aggregate({
+      prisma.order.count({
+        where: {
+          status: "Completed",
+        },
+      }),
+    ]);
 
-_sum:{
-total:true
-}
+    return NextResponse.json({
+      totalOrders,
+      totalSales: totalSales._sum.total ?? 0,
+      users,
+      menuItems,
+      pendingOrders,
+      completedOrders,
+    });
 
-});
+  } catch (error: any) {
+    console.error("Dashboard API Error:", error);
 
-
-const users = await prisma.user.count();
-
-
-const menuItems = await prisma.menuItem.count();
-
-
-
-const pendingOrders = await prisma.order.count({
-
-where:{
-status:"Pending"
-}
-
-});
-
-
-
-const completedOrders = await prisma.order.count({
-
-where:{
-status:"Completed"
-}
-
-});
-
-
-
-
-return NextResponse.json({
-
-totalOrders,
-
-totalSales:
-totalSales._sum.total || 0,
-
-users,
-
-menuItems,
-
-pendingOrders,
-
-completedOrders
-
-});
-
-
-
-}
-catch(error){
-
-console.log(error);
-
-
-return NextResponse.json(
-
-{
-error:"Dashboard data failed"
-},
-
-{
-status:500
-}
-
-);
-
-
-}
-
-
+    return NextResponse.json(
+      {
+        error: "Dashboard data failed",
+        message: error.message,
+      },
+      {
+        status: 500,
+      }
+    );
+  }
 }
