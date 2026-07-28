@@ -10,7 +10,6 @@ SmartServe AI is a next-generation **AI-powered restaurant management platform**
 The platform enables restaurants to manage customer ordering, kitchen workflows, inventory, analytics, and AI-driven business decisions through a unified intelligent system.
 
 > 🚀 Building an intelligent operating system for modern restaurants.
-
 ---
 
 # 🌟 Problem Statement
