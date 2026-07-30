@@ -504,6 +504,19 @@ SmartServe AI combines three major technologies:
 ✅ Increased efficiency  
 
 ---
+# 🔑 Demo Credentials
+
+For testing and evaluation, use the following demo accounts.
+
+---
+
+## 👨‍💼 Admin Account
+Email:
+admin@smartserve.ai
+
+Password:
+admin123
+---
 
 # 🚀 Deployment
 
